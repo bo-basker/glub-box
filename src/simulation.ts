@@ -18,7 +18,7 @@ export class Simulation {
         for (let y = 0; y < CANVAS_HEIGHT; y++) {
             const row: Particle[] = []
             for (let x = 0; x < CANVAS_WIDTH; x++) 
-                row.push(new Particle(ElementType.EMPTY))
+                row.push(new Particle(ElementType.EMPTY, 0))
             grid.push(row)
         }
         return grid
@@ -57,8 +57,46 @@ export class Simulation {
                 if (!this.pixelIsUnclaimed(x, y)) continue
 
 
+                // Seed mechanics
+                if (flags.has(Behavior.SEED) 
+                    && this.isWithinBounds(x, y+1)
+                    && this.grid[y+1][x].isArable() 
+                    && this.isValidGrowthTarget(x, y-1)) {
+                        const life = Math.floor(3 + Math.random() * 6)
+                        this.setPixel(x, y, new Particle(ElementType.SEAGRASS, life))
+                }
+
+
+                // Seagrass growth mechanics
+                else if (flags.has(Behavior.SEAGRASS)) {
+                    const dir = Math.floor(Math.random() * 4)
+                    
+                    if (p.life <= 0) this.setPixel(x, y, p)
+
+                    // Left
+                    else if (dir === 0 && this.isValidGrowthTarget(x-1, y-1)) {
+                        this.setPixel(x, y, p.resetLife())
+                        this.setPixel(x-1, y-1, p.decrementLife())
+
+                    // Right
+                    } else if (dir === 1 && this.isValidGrowthTarget(x+1, y-1)) {
+                        this.setPixel(x, y, p.resetLife())
+                        this.setPixel(x+1, y-1, p.decrementLife())
+
+                    // Center
+                    } else if (this.isValidGrowthTarget(x, y-1)) {
+                        this.setPixel(x, y, p.resetLife())
+                        this.setPixel(x, y-1, p.decrementLife())
+                    }
+
+                    // Base
+                    else {
+                        this.setPixel(x, y, p)
+                    }
+                }
+
                 // Standard Falling Behavior
-                if (flags.has(Behavior.FALLS) && this.isValidTarget(x, y+1, p)) {
+                else if (flags.has(Behavior.FALLS) && this.isValidTarget(x, y+1, p)) {
                     this.swapParticles(x, y, x, y+1)
                 }
 
@@ -119,10 +157,16 @@ export class Simulation {
             && p.isDenserThan(this.grid[y][x])
     }
 
+    isValidGrowthTarget(x: number, y: number): boolean {
+        return this.isWithinBounds(x, y)
+            && (this.grid[y][x].type === ElementType.WATER
+            || this.grid[y][x].type === ElementType.SEAGRASS)
+    }
+
     swapParticles(x: number, y: number, dx: number, dy: number) {
         if (this.isWithinBounds(x, y) && this.isWithinBounds(dx, dy)) {
             this.nextGrid[dy][dx] = this.grid[y][x]
-            this.nextGrid[y][x]= this.grid[dy][dx]
+            this.nextGrid[y][x] = this.grid[dy][dx]
         }
     }
 
@@ -136,7 +180,7 @@ export class Simulation {
 
     setPixel(x: number, y: number, p: Particle) {
         if (this.isWithinBounds(x, y))
-            this.grid[y][x] = p
+            this.nextGrid[y][x] = p
     }
 
     isWithinBounds(x: number, y: number) {

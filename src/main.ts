@@ -1,6 +1,6 @@
 import { Simulation } from "./simulation"
 import { MS_PER_FRAME, canvas, CANVAS_HEIGHT, CANVAS_WIDTH, BRUSH_SIZES, DEFAULT_BRUSH_SIZE} from "./constants"
-import { Particle, ElementType } from "./particle"
+import { Particle, ElementType, Behavior } from "./particle"
 
 /*
     Event Listeners for placing new pixels
@@ -35,6 +35,7 @@ function toGridCoords(e: MouseEvent): [number, number] {
 
 let activeElementType: ElementType = ElementType.SAND
 for (const [name, type] of Object.entries(ElementType)) {
+    if (type.flags.has(Behavior.HIDDEN)) continue
     const s = document.createElement("h1")
     s.className = "type-selector"
     s.textContent = name.toLowerCase()
@@ -60,7 +61,7 @@ const sim = new Simulation()
 let lastStepTimestamp = 0
 
 function loop(timestamp: number) {
-    if (mouseHeld) sim.place(mouseX, mouseY, brushSize, new Particle(activeElementType))
+    if (mouseHeld) sim.place(mouseX, mouseY, brushSize, new Particle(activeElementType, 0))
     
     if (timestamp - lastStepTimestamp >= MS_PER_FRAME) {
         lastStepTimestamp = timestamp
