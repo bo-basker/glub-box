@@ -22,7 +22,7 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.PORTFOLIO_DEPLOY_TOKEN }}
         with:
           source_file: dist/.
-          destination_repo: yourusername/portfolio
+          destination_repo: bo-basker/bo-basker.github.io
           destination_folder: glub-box
           user_email: baskerbt@gmail.com
           user_name: bo-basker
