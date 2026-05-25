@@ -1,0 +1,48 @@
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: #5f486e;
+  background-image: url("https://www.transparenttextures.com/patterns/white-diamond-dark.png");
+  margin-top: 80px;
+}
+
+#canvas {
+  border: 8px solid black;
+  width: 80%;
+  image-rendering: pixelated;
+}
+
+#menu {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  flex-direction: row;
+  padding: 12px;
+}
+
+#type-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.type-selector {
+  display: flex;
+  align-items: center;
+  background-color: brown;
+  width: 100px;
+  border: 8px solid black;
+  justify-content: center;
+  padding: 0px 10px;
+  margin: 5px 10px;
+  cursor: pointer;
+}
+
+
+#brush-list {
+  padding: 0px 15px;
+}
