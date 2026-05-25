@@ -1,0 +1,29 @@
+name: Build and Deploy
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install
+      - run: npm run build
+
+      - name: Deploy to portfolio repo
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.PORTFOLIO_DEPLOY_TOKEN }}
+        with:
+          source_file: dist/.
+          destination_repo: yourusername/portfolio
+          destination_folder: glub-box
+          user_email: baskerbt@gmail.com
+          user_name: bo-basker
+          commit_message: "Deploy: Update GlubBox"
